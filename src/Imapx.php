@@ -48,15 +48,15 @@ class Imapx
 	}
 
 	/**
-	 * @param null $host
-	 * @param null $driver
 	 * @param null $user
 	 * @param null $password
+	 * @param null $host
 	 * @param null $port
 	 * @param null $ssl
+	 * @param null $driver
 	 * @param null $novalidate
 	 */
-	function connect($host = null, $driver = null, $user = null, $password = null, $port = null, $ssl = null, $novalidate = null)
+	function connect($user = null, $password = null, $host = null, $port = null, $ssl = null, $driver = null, $novalidate = null)
 	{
 		$this->driver = !is_null($driver) ? $driver : config('imapx.driver');
 		$this->hostname = !is_null($host) ? $host : config('imapx.host');
@@ -71,8 +71,10 @@ class Imapx
 		$this->stream = imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password) or die('Cannot connect to Server: ' . imap_last_error());
 
 
-		if($this->stream)
-			$this->isConnect = true;
+		if(empty($this->stream)) {
+			return false;
+		}
+		$this->isConnect = true;
 	}
 
 
