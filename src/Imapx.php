@@ -6,7 +6,7 @@
 
 	"composer require nahidz/imapx"
 */
-use Log;
+use Illuminate\Support\Facades\Log;
 class Imapx
 {
 	private $driver;
@@ -72,7 +72,7 @@ class Imapx
 		try {
 			imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password);
 		} catch (\Exception $e) {
-			Log::info('Cannot connect to Imap Server: '.$e->getMessage(), "\n");
+			Log::info('Cannot connect to Imap Server: '.$e->getMessage()."\n");
 			return false;
 		}
 		$this->isConnect = true;
