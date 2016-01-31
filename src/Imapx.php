@@ -69,9 +69,10 @@ class Imapx
 		$this->ssl = !is_null($ssl) ? $ssl : config('imapx.ssl') ? '/ssl' : '';
 		$this->novalidate = !is_null($novalidate) ? $novalidate : config('imapx.novalidate');
 		$this->novalidate = $this->novalidate ? '/novalidate-cert' : '';
-		$this->stream = @imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password);
-		if(!is_resource($this->stream)){
-			Log::info('Cannot connect to Imap Server: '.imap_last_error()."\n");
+		try {
+			$this->stream = imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password);
+		} catch (\Exception $e) {
+			Log::info('Cannot connect to Imap Server: '.$e->getMessage()."\n");
 			return false;
 		}
 		$this->isConnect = true;
@@ -109,6 +110,9 @@ class Imapx
 
 		$sorted=imap_sort($this->stream, $by, $order);
 		$mails = array_chunk($sorted, $perPage);
+		if(empty($mails)){
+			return $mails;
+		}
 		$mails = $mails[$page-1];
 
 		$mbox = imap_check($this->stream);
