@@ -24,27 +24,25 @@ class Imapx
 	protected $msgId			=	0;
 
 	protected $sortBy = [
-                        'order' => [
-                        	'asc' 	=> 0,
-                            'desc' 	=> 1
-                             ],
+		'order' => [
+			'asc' 	=> 0,
+			'desc' 	=> 1
+		],
 
-                        'by'    => [
-                        	'date' 		=> SORTDATE,
-                            'arrival' 	=> SORTARRIVAL,
-                            'from' 		=> SORTFROM,
-                            'subject' 	=> SORTSUBJECT,
-                            'size'		=> SORTSIZE
-                                                ]
-                        ];
+		'by'    => [
+			'date' 		=> SORTDATE,
+			'arrival' 	=> SORTARRIVAL,
+			'from' 		=> SORTFROM,
+			'subject' 	=> SORTSUBJECT,
+			'size'		=> SORTSIZE
+		]
+	];
 
 
 	function __construct()
 	{
 		if(config('imapx.auto-connect')){
-
 			$this->connect();
-
 		}
 	}
 
@@ -88,6 +86,9 @@ class Imapx
 		imap_close($this->stream);
 	}
 
+	/**
+	 * @return bool|int
+	 */
 	public function totalEmail()
 	{
 		if(!$this->isConnect) return false;
@@ -95,6 +96,12 @@ class Imapx
 		return imap_num_msg($this->stream);
 	}
 
+	/**
+	 * @param int $page
+	 * @param int $perPage
+	 * @param null $sort
+	 * @return array|bool
+	 */
 	public function getInbox($page=1, $perPage=25, $sort=null)
 	{
 		if(!$this->isConnect) return false;
@@ -134,7 +141,10 @@ class Imapx
 		return $this->inbox;
 	}
 
-
+	/**
+	 * @param null $id
+	 * @return $this|bool
+	 */
 	function readMail($id=null)
 	{
 		if(!$this->isConnect) return false;
@@ -148,6 +158,10 @@ class Imapx
 
 	}
 
+	/**
+	 * @param string $pattern
+	 * @return bool|string
+	 */
 	function getDate($pattern='Y-m-d')
 	{
 		if(!$this->isConnect) return false;
@@ -156,6 +170,9 @@ class Imapx
 		return $date;
 	}
 
+	/**
+	 * @return bool
+	 */
 	function getSubject()
 	{
 		if(!$this->isConnect) return false;
@@ -164,6 +181,9 @@ class Imapx
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	function getRecieverEmail()
 	{
 		if(!$this->isConnect) return false;
@@ -171,6 +191,9 @@ class Imapx
 		return $this->headers->toaddress;
 	}
 
+	/**
+	 * @return bool
+	 */
 	function getSenderName()
 	{
 		if(!$this->isConnect) return false;
@@ -179,7 +202,9 @@ class Imapx
 		return $name;
 	}
 
-
+	/**
+	 * @return bool|string
+	 */
 	function getSenderEmail()
 	{
 		if(!$this->isConnect) return false;
@@ -190,6 +215,10 @@ class Imapx
 		return $mailboxName.'@'.$host;
 	}
 
+	/**
+	 * @param string $class
+	 * @return bool|string
+	 */
 	function getSenderLink($class='link')
 	{
 		if(!$this->isConnect) return false;
@@ -198,6 +227,9 @@ class Imapx
 		return $link;
 	}
 
+	/**
+	 * @return bool
+	 */
 	function isSeen()
 	{
 		if(!$this->isConnect) return false;
@@ -206,6 +238,10 @@ class Imapx
 
 		return $seen=='U'?false:true;
 	}
+
+	/**
+	 * @return bool
+	 */
 	function isAnswered()
 	{
 		if(!$this->isConnect) return false;
@@ -214,19 +250,28 @@ class Imapx
 		return $answer=='A'?true:false;
 	}
 
+	/**
+	 * @param string $unit
+	 * @return bool|string
+	 */
 	function getSize($unit='kb')
 	{
 		if(!$this->isConnect) return false;
 
 		$units=[
-				'kb' => 1024,
-				'mb' => 1048576
-			];
+			'kb' => 1024,
+			'mb' => 1048576
+		];
 
 		$size = $this->headers->Size;
 		return number_format($size/$units[$unit], 2);
 	}
 
+	/**
+	 * @param string $display
+	 * @param bool $decode
+	 * @return bool|string
+	 */
 	function getBody($display='text', $decode=true)
 	{
 		if(!$this->isConnect) return false;
@@ -253,11 +298,34 @@ class Imapx
 		return $body;
 	}
 
+	/**
+	 * @param $msg_number
+	 * @return bool
+	 */
+	function set_delete_status($msg_number){
+		if(!$this->isConnect) return false;
+		return imap_delete($this->stream, $msg_number);
+	}
+
+	/**
+	 * @return bool
+	 */
+	function delete_trash_messages(){
+		if(!$this->isConnect) return false;
+		return imap_expunge($this->stream);
+	}
+
+	/**
+	 * @return bool|object
+	 */
+	function check(){
+		if(!$this->isConnect) return false;
+		return imap_mailboxmsginfo($this->stream);
+	}
+
 	function __destruct()
 	{
-
 		$this->close();
-
 	}
 
 }
