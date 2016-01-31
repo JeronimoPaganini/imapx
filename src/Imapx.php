@@ -70,7 +70,7 @@ class Imapx
 		$this->novalidate = !is_null($novalidate) ? $novalidate : config('imapx.novalidate');
 		$this->novalidate = $this->novalidate ? '/novalidate-cert' : '';
 		try {
-			imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password);
+			$this->stream = imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password);
 		} catch (\Exception $e) {
 			Log::info('Cannot connect to Imap Server: '.$e->getMessage()."\n");
 			return false;
