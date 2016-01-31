@@ -110,7 +110,10 @@ class Imapx
 
 		$sorted=imap_sort($this->stream, $by, $order);
 		$mails = array_chunk($sorted, $perPage);
-		$mails = (!empty($mails)) ? $mails[$page-1] : $mails;
+		if(empty($mails)){
+			return false;
+		}
+		$mails = $mails[$page-1];
 
 		$mbox = imap_check($this->stream);
 		$inbox = imap_fetch_overview($this->stream, implode($mails,','), 0);
