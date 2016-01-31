@@ -55,6 +55,7 @@ class Imapx
 	 * @param null $ssl
 	 * @param null $driver
 	 * @param null $novalidate
+	 * @return bool
 	 */
 	function connect($user = null, $password = null, $host = null, $port = null, $ssl = null, $driver = null, $novalidate = null)
 	{
