@@ -83,7 +83,7 @@ class Imapx
 	function close()
 	{
 		if(!$this->isConnect) return false;
-		imap_close($this->stream);
+		@imap_close($this->stream);
 	}
 
 	/**
