@@ -6,6 +6,7 @@
 
 	"composer require nahidz/imapx"
 */
+use Log;
 class Imapx
 {
 	private $driver;
@@ -68,11 +69,10 @@ class Imapx
 		$this->ssl = !is_null($ssl) ? $ssl : config('imapx.ssl') ? '/ssl' : '';
 		$this->novalidate = !is_null($novalidate) ? $novalidate : config('imapx.novalidate');
 		$this->novalidate = $this->novalidate ? '/novalidate-cert' : '';
-
-		$this->stream = imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password) or die('Cannot connect to Server: ' . imap_last_error());
-
-
-		if(empty($this->stream)) {
+		try {
+			imap_open('{'.$this->hostname.$this->port.'/'.$this->driver.$this->ssl.$this->novalidate.'}INBOX',$this->username,$this->password);
+		} catch (\Exception $e) {
+			Log::info('Cannot connect to Imap Server: '.$e->getMessage(), "\n");
 			return false;
 		}
 		$this->isConnect = true;
